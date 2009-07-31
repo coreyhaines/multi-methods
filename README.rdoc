@@ -4,6 +4,33 @@ Multi-Methods is a library for creating dynamically-dispatched methods in a ruby
 
 This is also a small project to show Jon Kern some interesting aspects of Ruby programming.
 
+Here's a couple simple examples (you can look at the cucumber features, as well):
+
+
+
+class PathMan
+  include MultiMethods
+
+  multi_method :route_me do
+    router {|*args| args[0] == true ? :path_one : :path_two}
+    implementation_for :path_one do |*args|
+      "you called path one"
+    end
+    implementation_for :path_two do |*args|
+      "you called path two"
+    end
+  end
+end
+
+allows you to call
+
+p = PathMan.new
+p.route_me true #=> "you called path one"
+p.route_me false #=> "you called path two"
+
+
+
+
 == Note on Patches/Pull Requests
  
 * Fork the project.
