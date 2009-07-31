@@ -4,18 +4,18 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe MultiMethods do
   before(:each) do
-    @o = Class.new
-    @o.send :include, MultiMethods
+    @class = Class.new
+    @class.send :include, MultiMethods
   end
   context "calling the created method" do
     before(:each) do
-      @o.multi_method :hello_world do
+      @class.multi_method :hello_world do
         router {|*args| :the_path}
         implementation_for :the_path do
           'hello, world'
         end
       end
-      @instance = @o.new
+      @instance = @class.new
     end
     it "returns the value" do
       @instance.hello_world.should == "hello, world"
@@ -24,7 +24,7 @@ describe MultiMethods do
   
   context "routing to different implementation" do
     before(:each) do
-      @o.multi_method :route_me do
+      @class.multi_method :route_me do
         router {|*args| args[0]}
         implementation_for :path_one do |*args|
           "you called path one"
@@ -33,7 +33,7 @@ describe MultiMethods do
           "you called path two"
         end
       end
-      @instance = @o.new
+      @instance = @class.new
     end
     
     it "routes to first path" do
@@ -49,16 +49,36 @@ describe MultiMethods do
   
   context "working with parameters" do
     before(:each) do
-      @o.multi_method :return_parameters do
+      @class.multi_method :return_parameters do
         router {|*args| :path}
         implementation_for :path do |*args|
           args
         end
       end
-      @instance = @o.new
+      @instance = @class.new
     end
     it "gets parameters passed to it" do
       @instance.return_parameters(2, 3, 4).should == [2,3,4]
+    end
+  end
+  
+  context "adding new dispatching" do
+    before(:each) do
+      @class.multi_method :add_to_me do
+        router {|*args| args[0]}
+        implementation_for :existing do |*args|
+          :existing_method
+        end
+      end
+      @instance = @class.new
+    end
+    it "routes to the added implementation" do
+      @class.multi_method :add_to_me do
+        implementation_for :added do |*args|
+          :added
+        end
+      end
+      @instance.add_to_me(:added).should == :added
     end
   end
 end

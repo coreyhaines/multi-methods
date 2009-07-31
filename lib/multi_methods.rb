@@ -4,48 +4,55 @@ module MultiMethods
   end
   module ClassMethods
     def multi_method name, &block
+      dispatcher = dispatcher_for name, &block
       define_method name do |*args|
-        MultiMethod.call(*args, &block)
+        dispatcher.execute(*args)
       end
+    end
+    def dispatchers
+      @dispatchers ||= {}
+    end
+    def dispatcher_for name, &block
+      unless dispatchers[name]
+        dispatchers[name] = MultiMethod::Dispatcher.new
+      end
+      dispatchers[name].instance_eval &block
+      dispatchers[name]
     end
   end
   
   
   class MultiMethod
     def self.call(*args, &block)
-      @dispatcher = MultiMethod.get_multimethod(&block)
-      @dispatcher.execute(*args)
+      create_dispatcher(&block).execute(*args)
+    end
+    def self.create_dispatcher &block
+      dispatcher = Dispatcher.new
+      dispatcher.instance_eval(&block)
+      dispatcher
     end
 
-
-
     class Dispatcher
-      attr_accessor :methods
-      attr_accessor :router_method
       def initialize
-        @methods = Hash.new(Proc.new {})
+        @implementations = Hash.new(Proc.new {})
       end
       def router &block
-        @router_method = block
+        @dispatching_method = block
       end
       def implementation_for symbol, &block
-        @methods[symbol] = block
+        @implementations[symbol] = block
       end
-      def code_for dispatching_value
-        @methods[dispatching_value]
-      end
-    
+
       def execute(*args)
-        dispatching_value = router_method.call(*args)
+        dispatching_value = @dispatching_method.call(*args)
         proc = code_for dispatching_value
         proc.call(*args)
       end
-    end
+      
 private
-    def self.get_multimethod &block
-      implementation = Dispatcher.new
-      implementation.instance_eval(&block)
-      implementation
+      def code_for dispatching_value
+        @implementations[dispatching_value]
+      end
     end
   end
 end
