@@ -1,6 +1,6 @@
 Feature: Multi-methods
 
-  Scenario: simple hello, world, one path
+  Scenario Outline: simple one path
     Given the following code
     """
       class HelloWorldReturner
@@ -9,7 +9,7 @@ Feature: Multi-methods
         multi_method :hello_world do
           router {|*args| :hello_world}
           implementation_for :hello_world do
-            'you worked'
+            "<expected_return_value>"
           end
         end
       end
@@ -19,4 +19,9 @@ Feature: Multi-methods
       p = HelloWorldReturner.new
       p.hello_world
     """
-    Then the return should be "you worked"
+    Then the return should be "<expected_return_value>"
+
+    Examples:
+    |expected_return_value|
+    |you worked|
+    |another value|

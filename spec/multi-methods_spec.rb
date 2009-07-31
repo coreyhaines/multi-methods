@@ -1,13 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 
-class Foo
-  include MultiMethods
-  
-  multi_method :bar do
-  end
-end
-
 class HelloWorldReturner
   include MultiMethods
   
@@ -19,22 +12,22 @@ class HelloWorldReturner
   end
 end
 
-describe MultiMethods do
-
-  context "getting it compiling" do
-    it "allows me to include and call on a class" do
-      Foo.new
+class HelloWorldReturner2
+  include MultiMethods
+  
+  multi_method :hello_world do
+    router {|*args| :hello_world}
+    implementation_for :hello_world do
+      'another return'
     end
   end
-  
+end
+
+describe MultiMethods do
   context "calling the created method" do
-    it "has the method" do
-      Foo.new.bar
-    end
     it "returns the appropriate value" do
       HelloWorldReturner.new.hello_world.should == "you worked"
+      HelloWorldReturner2.new.hello_world.should == "another return"
     end
   end
-  
-  
 end
