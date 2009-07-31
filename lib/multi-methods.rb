@@ -1,0 +1,3 @@
+class MultiMethods
+  
+end
