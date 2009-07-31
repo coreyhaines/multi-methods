@@ -57,23 +57,52 @@ Feature: Multi-methods
       """
       Then the return should be "you called path two"
 
-       Scenario: working with parameters
-          Given the following code
-          """
-            class Summer
-              include MultiMethods
+     Scenario: working with parameters
+        Given the following code
+        """
+          class Summer
+            include MultiMethods
 
-              multi_method :sum do
-                router {|*args| :add_them}
-                implementation_for :add_them do |*args|
-                  args.inject(0) {|accum,num|accum+num}
-                end
+            multi_method :sum do
+              router {|*args| :add_them}
+              implementation_for :add_them do |*args|
+                args.inject(0) {|accum,num|accum+num}
               end
             end
-          """
-          When I run
-          """
-            p = Summer.new
-            p.sum 1, 2, 3, 4
-          """
-          Then the return should be "10"
+          end
+        """
+        When I run
+        """
+          p = Summer.new
+          p.sum 1, 2, 3, 4
+        """
+        Then the return should be "10"
+
+      Scenario: working with parameters
+         Given the following code
+         """
+           class AddingToThis
+             include MultiMethods
+
+             multi_method :add_to_me do
+               router {|*args| args[0]}
+               implementation_for :existing do |*args|
+                 'existing'
+               end
+             end
+           end
+         """
+         And the following code
+         """
+          AddingToThis.multi_method :add_to_me do
+            implementation_for :another_path do |*args|
+              'another_path'
+            end
+          end
+         """
+         When I run
+         """
+           p = AddingToThis.new
+           p.add_to_me :another_path
+         """
+         Then the return should be "another_path"
