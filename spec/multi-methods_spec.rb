@@ -25,7 +25,7 @@ describe MultiMethods do
   context "routing to different implementation" do
     before(:each) do
       @o.multi_method :route_me do
-        router {|*args| args[0] == true ? :path_one : :path_two}
+        router {|*args| args[0]}
         implementation_for :path_one do |*args|
           "you called path one"
         end
@@ -37,10 +37,13 @@ describe MultiMethods do
     end
     
     it "routes to first path" do
-      @instance.route_me(true).should == "you called path one"
+      @instance.route_me(:path_one).should == "you called path one"
     end
     it "routes to second path" do
-      @instance.route_me(false).should == "you called path two"
+      @instance.route_me(:path_two).should == "you called path two"
+    end
+    it "returns nil if no matching dispatch value" do
+      @instance.route_me(:no_path).should be_nil
     end
   end
   
