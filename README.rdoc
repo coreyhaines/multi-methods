@@ -1,13 +1,14 @@
 = multi-methods
 
-Description goes here.
+Multi-Methods is a library for creating dynamically-dispatched methods in a ruby class. What does this mean? Well, I'm not the one to explain it, but I look at it as a nice way to extract if-statements from your code, since, as we all know, 'if-statements are evil.'
+
+This is also a small project to show Jon Kern some interesting aspects of Ruby programming.
 
 == Note on Patches/Pull Requests
  
 * Fork the project.
 * Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
+* Add tests for it. If you don't have tests, it will not get integrated.
 * Commit, do not mess with rakefile, version, or history.
   (if you want to have your own version, that is fine but
    bump version in a commit by itself I can ignore when I pull)
