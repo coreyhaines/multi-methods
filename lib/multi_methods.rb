@@ -2,6 +2,14 @@ module MultiMethods
   def self.included(base)
     base.extend ClassMethods
   end
+  module ClassMethods
+    def multi_method name, &block
+      define_method name do |*args|
+        MultiMethod.call(*args, &block)
+      end
+    end
+  end
+  
   
   class MultiMethod
     def self.get_multimethod &block
@@ -12,7 +20,7 @@ module MultiMethods
 
     def execute(*args)
       desired_route = router_method.call(*args)
-      proc = methods[desired_route] || Proc.new {}
+      proc = code_for desired_route
       proc.call(*args)
     end
 
@@ -32,13 +40,8 @@ module MultiMethods
     def implementation_for symbol, &block
       @methods[symbol] = block
     end
-  end
-  
-  module ClassMethods
-    def multi_method name, &block
-      define_method name do |*args|
-        MultiMethod.call(*args, &block)
-      end
+    def code_for path
+      @methods[path] || Proc.new {}
     end
   end
   

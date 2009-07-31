@@ -7,5 +7,5 @@ When /^I run$/ do |code|
 end
 
 Then /^the return should be "([^\"]*)"$/ do |expected_result|
-  @result.should == expected_result
+  @result.to_s.should == expected_result
 end
