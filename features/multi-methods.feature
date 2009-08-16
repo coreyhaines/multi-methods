@@ -78,7 +78,7 @@ Feature: Multi-methods
         """
         Then the return should be "10"
 
-      Scenario: working with parameters
+      Scenario: adding a new implementation for a multi-method
          Given the following code
          """
            class AddingToThis

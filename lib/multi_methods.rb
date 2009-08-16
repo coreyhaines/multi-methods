@@ -23,15 +23,6 @@ module MultiMethods
   
   
   class MultiMethod
-    def self.call(*args, &block)
-      create_dispatcher(&block).execute(*args)
-    end
-    def self.create_dispatcher &block
-      dispatcher = Dispatcher.new
-      dispatcher.instance_eval(&block)
-      dispatcher
-    end
-
     class Dispatcher
       def initialize
         @implementations = Hash.new(Proc.new {})
